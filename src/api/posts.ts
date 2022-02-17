@@ -46,10 +46,33 @@ export const addNewPost = async (
 export const deletePost = async (postId: string) => {
   const url = `${BASE_URL}/posts/${postId}`;
 
-  await fetch(url, {
+  const response = await fetch(url, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  return response.json();
+};
+
+export const updatePost = async (
+  id: string,
+  title: string,
+  body: string,
+) => {
+  const data = {
+    title,
+    body,
+  };
+  const url = `${BASE_URL}/posts/${id}`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return response.json();
 };

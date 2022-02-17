@@ -8,11 +8,7 @@ export const setPosts = (posts: Post[]) => ({ type: SET_POSTS, payload: posts })
 export const setSelectedPostId = (id: number) => ({ type: SET_SELECTED_POST_ID, payload: id });
 
 const initialState: PostsListSlice = {
-  posts: [{
-    id: 0,
-    title: '',
-    body: '',
-  }],
+  posts: [],
   selectedPostId: 0,
 };
 

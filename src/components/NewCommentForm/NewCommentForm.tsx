@@ -3,8 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import './NewCommentForm.scss';
 import { postComment } from '../../api/comments';
 import { getPostDetailsFromServer } from '../../store/index';
+import { Loader } from '../Loader';
 
 export const NewCommentForm: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const dispatch = useDispatch();
   const selectedPostId = useSelector((state: PostsState) => state.postsListSlice.selectedPostId);
   const [bodyForComment, setBodyForComment] = useState<string>('');
@@ -15,33 +18,49 @@ export const NewCommentForm: React.FC = () => {
 
   const handleAddComment = async (event: React.FormEvent) => {
     event.preventDefault();
-    await postComment(
-      selectedPostId,
-      bodyForComment,
-    );
+    setLoading(true);
+    setError('');
+    try {
+      await postComment(selectedPostId, bodyForComment);
+    } catch {
+      setError('Failed to post a comment');
+    }
+
+    setLoading(false);
     setBodyForComment('');
 
     dispatch(getPostDetailsFromServer(selectedPostId));
   };
 
-  return (
-    <form className="NewCommentForm" onSubmit={handleAddComment}>
-      <div className="form-field">
-        <textarea
-          name="body"
-          placeholder="Type comment here"
-          className="NewCommentForm__input"
-          value={bodyForComment}
-          onChange={handleBodyInput}
-        />
-      </div>
+  const getForm = () => {
+    if (loading === false) {
+      return (
+        <form className="NewCommentForm" onSubmit={handleAddComment}>
+          <div className="error">{error}</div>
 
-      <button
-        type="submit"
-        className="NewCommentForm__submit-button button"
-      >
-        Add a comment
-      </button>
-    </form>
-  );
+          <div className="form-field">
+            <textarea
+              name="body"
+              placeholder="Type comment here"
+              className="NewCommentForm__input"
+              value={bodyForComment}
+              onChange={handleBodyInput}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="NewCommentForm__submit-button button"
+          >
+            Add a comment
+          </button>
+        </form>
+      );
+    }
+
+    return <Loader />;
+  };
+
+  return getForm();
 };

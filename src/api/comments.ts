@@ -23,10 +23,12 @@ export const postComment = async (
 export const deleteComment = async (postId: string) => {
   const url = `${BASE_URL}/comments/${postId}`;
 
-  await fetch(url, {
+  const response = await fetch(url, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  return response.json();
 };

@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getPostDetailsFromServer } from '../../store/index';
 import { NewCommentForm } from '../NewCommentForm';
-// import { Loader } from '../Loader';
+import { Loader } from '../Loader';
 import './PostDetails.scss';
 
 import { deleteComment } from '../../api/comments';
 
 export const PostDetails: React.FC = () => {
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [commentsLoading, setCommentsLoading] = useState(false);
   const dispatch = useDispatch();
   const selectedPostId = useSelector((state: PostsState) => state.postsListSlice.selectedPostId);
   const selectedPostDetails = useSelector((state: PostsState) => state.postDetailsSlice);
@@ -16,8 +19,17 @@ export const PostDetails: React.FC = () => {
   const [commentsVisible, setCommentsVisible] = useState(false);
 
   useEffect(() => {
-    dispatch(getPostDetailsFromServer(selectedPostId));
-    // dispatch(getCommentsFromServer(selectedPostId));
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        await dispatch(getPostDetailsFromServer(selectedPostId));
+      } catch {
+        setError('Some error ocurred while connecting the server');
+      }
+
+      setLoading(false);
+    })();
   }, [selectedPostId]);
 
   const toggleComments = () => {
@@ -45,46 +57,69 @@ export const PostDetails: React.FC = () => {
   };
 
   const deleteHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    await deleteComment(event.currentTarget.name);
-    dispatch(getPostDetailsFromServer(selectedPostId));
+    setCommentsLoading(true);
+    try {
+      await deleteComment(event.currentTarget.name);
+      await dispatch(getPostDetailsFromServer(selectedPostId));
+    } catch {
+      setError('Having trouble connecting to the server');
+    }
+
+    setCommentsLoading(false);
   };
 
-  return (
-    <div className="PostDetails">
-      <h2>Post details:</h2>
-      {selectedPostId !== 0 ? (
+  const getPostDetails = () => {
+    if (selectedPostId !== 0 && loading === false) {
+      return (
         <>
           <section className="PostDetails__post">
             <h3>{selectedPostDetails && selectedPostDetails.title}</h3>
             <p>{selectedPostDetails && selectedPostDetails.body}</p>
           </section>
 
-          <section className="PostDetails__comments">
-            {getCommentsButton()}
+          {commentsLoading === true
+            ? (<Loader />)
+            : (
+              <section className="PostDetails__comments">
+                {getCommentsButton()}
 
-            <ul className="PostDetails__list">
-              {comments && commentsVisible && comments.map(comment => (
-                <li className="PostDetails__list-item" key={comment.id}>
-                  <button
-                    type="button"
-                    className="PostDetails__remove-button button"
-                    name={String(comment.id)}
-                    onClick={deleteHandler}
-                  >
-                    X
-                  </button>
-                  <p>{comment.body}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-
+                <ul className="PostDetails__list">
+                  {comments && commentsVisible && comments.map(comment => (
+                    <li className="PostDetails__list-item" key={comment.id}>
+                      <button
+                        type="button"
+                        className="PostDetails__remove-button button"
+                        name={String(comment.id)}
+                        onClick={deleteHandler}
+                      >
+                        X
+                      </button>
+                      <p>{comment.body}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           <section>
             <div className="PostDetails__form-wrapper">
               <NewCommentForm />
             </div>
           </section>
         </>
+      );
+    }
+
+    return (<Loader />);
+  };
+
+  return (
+    <div className="PostDetails">
+      <h2>Post details:</h2>
+
+      <div className="error">{error}</div>
+
+      {selectedPostId !== 0 ? (
+        getPostDetails()
       ) : (
         <span>Please select a post to see details</span>
       )}

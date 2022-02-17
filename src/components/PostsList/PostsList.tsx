@@ -1,14 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import { getPostsFromServer } from '../../store/index';
 import { setSelectedPostId } from '../../store/postsListSlice';
 import { deletePost } from '../../api/posts';
+import { Loader } from '../Loader';
 
 import './PostsList.scss';
 
 export const PostsList = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
   const {
     selectedPostId,
     posts,
@@ -17,7 +21,17 @@ export const PostsList = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getPostsFromServer());
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        await dispatch(getPostsFromServer());
+      } catch {
+        setError('Some error ocurred while connecting the server');
+      }
+
+      setLoading(false);
+    })();
   }, []);
 
   const handleOpenPost = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -25,12 +39,25 @@ export const PostsList = () => {
   };
 
   const handleDeletePost = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    await deletePost(event.currentTarget.name);
-    dispatch(getPostsFromServer());
+    setLoading(true);
+    try {
+      await deletePost(event.currentTarget.name);
+      await dispatch(getPostsFromServer());
+    } catch {
+      setError('Server did not respond');
+    }
+
+    setLoading(false);
+  };
+
+  const handleUpdatePost = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    const id: string = event.currentTarget.name;
+
+    navigate('/update-post-form', { state: id });
   };
 
   const getVisiblePosts = () => {
-    if (posts.length !== 0) {
+    if (posts.length !== 0 && loading === false) {
       return (
         posts.map(post => (
           <li className="PostsList__item" key={post.id}>
@@ -57,6 +84,18 @@ export const PostsList = () => {
                   'button',
                 )}
                 name={String(post.id)}
+                onClick={handleUpdatePost}
+              >
+                Update
+              </button>
+
+              <button
+                type="button"
+                className={classNames(
+                  'PostsList__button',
+                  'button',
+                )}
+                name={String(post.id)}
                 onClick={handleDeletePost}
               >
                 Delete
@@ -67,7 +106,11 @@ export const PostsList = () => {
       );
     }
 
-    return (<span>This user does not have posts yet</span>);
+    if (posts.length === 0 && loading === false) {
+      return (<span>There are no posts yet. You can add your own.</span>);
+    }
+
+    return (<Loader />);
   };
 
   return (
@@ -81,6 +124,9 @@ export const PostsList = () => {
       >
         <button type="button">Add new post</button>
       </NavLink>
+
+      <div className="error">{error}</div>
+
       <ul className="PostsList__list">
         {getVisiblePosts()}
       </ul>

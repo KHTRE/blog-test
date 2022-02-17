@@ -5,6 +5,7 @@ import { PostsList } from './components/PostsList';
 import { PostDetails } from './components/PostDetails';
 import WrongPage from './components/WrongPage';
 import { NewPostForm } from './components/NewPostForm';
+import { UpdatePostForm } from './components/UpdatePostForm';
 
 const App: React.FC = () => {
   const getPostsBlock = () => {
@@ -26,6 +27,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={getPostsBlock()} />
         <Route path="/new-post-form" element={<NewPostForm />} />
+        <Route path="/update-post-form" element={<UpdatePostForm />} />
         <Route path="*" element={<WrongPage />} />
       </Routes>
     </div>
