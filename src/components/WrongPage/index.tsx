@@ -1,3 +1,1 @@
-import { WrongPage } from './WrongPage';
-
-export default WrongPage;
+export * from './WrongPage';

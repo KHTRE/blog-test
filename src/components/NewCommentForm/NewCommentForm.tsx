@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import './NewCommentForm.scss';
 import { postComment } from '../../api/comments';
 import { getPostDetailsFromServer } from '../../store/index';
 import { Loader } from '../Loader';
+import './NewCommentForm.scss';
 
 export const NewCommentForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [bodyForComment, setBodyForComment] = useState<string>('');
+
   const dispatch = useDispatch();
   const selectedPostId = useSelector((state: PostsState) => state.postsListSlice.selectedPostId);
-  const [bodyForComment, setBodyForComment] = useState<string>('');
 
   const handleBodyInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBodyForComment(event.target.value);
@@ -51,7 +52,7 @@ export const NewCommentForm: React.FC = () => {
 
           <button
             type="submit"
-            className="NewCommentForm__submit-button button"
+            className="NewCommentForm__submit-button"
           >
             Add a comment
           </button>

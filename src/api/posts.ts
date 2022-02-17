@@ -31,6 +31,7 @@ export const addNewPost = async (
     title,
     body,
   };
+
   const url = `${BASE_URL}/posts`;
   const response = await fetch(url, {
     method: 'POST',
@@ -65,6 +66,7 @@ export const updatePost = async (
     title,
     body,
   };
+
   const url = `${BASE_URL}/posts/${id}`;
   const response = await fetch(url, {
     method: 'PUT',

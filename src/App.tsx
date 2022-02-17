@@ -3,7 +3,7 @@ import React from 'react';
 import './App.scss';
 import { PostsList } from './components/PostsList';
 import { PostDetails } from './components/PostDetails';
-import WrongPage from './components/WrongPage';
+import { WrongPage } from './components/WrongPage';
 import { NewPostForm } from './components/NewPostForm';
 import { UpdatePostForm } from './components/UpdatePostForm';
 
@@ -11,11 +11,11 @@ const App: React.FC = () => {
   const getPostsBlock = () => {
     return (
       <main className="App__main">
-        <div className="App__sidebar">
+        <div className="App__content">
           <PostsList />
         </div>
 
-        <div className="App__content">
+        <div className="App__sidebar">
           <PostDetails />
         </div>
       </main>

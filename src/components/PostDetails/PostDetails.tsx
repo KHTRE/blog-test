@@ -3,20 +3,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getPostDetailsFromServer } from '../../store/index';
 import { NewCommentForm } from '../NewCommentForm';
 import { Loader } from '../Loader';
-import './PostDetails.scss';
-
 import { deleteComment } from '../../api/comments';
+import './PostDetails.scss';
 
 export const PostDetails: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsVisible, setCommentsVisible] = useState(false);
+
   const dispatch = useDispatch();
   const selectedPostId = useSelector((state: PostsState) => state.postsListSlice.selectedPostId);
   const selectedPostDetails = useSelector((state: PostsState) => state.postDetailsSlice);
   const comments = useSelector((state: PostsState) => state.postDetailsSlice.comments);
-
-  const [commentsVisible, setCommentsVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -88,7 +87,7 @@ export const PostDetails: React.FC = () => {
                     <li className="PostDetails__list-item" key={comment.id}>
                       <button
                         type="button"
-                        className="PostDetails__remove-button button"
+                        className="PostDetails__remove-button"
                         name={String(comment.id)}
                         onClick={deleteHandler}
                       >

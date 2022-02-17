@@ -43,7 +43,7 @@ export const UpdatePostForm: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="UpdatePostForm">
       <NavLink
         to="/"
         className={({
@@ -54,37 +54,39 @@ export const UpdatePostForm: React.FC = () => {
 
         <div className="error">{error}</div>
       </NavLink>
-      <form className="NewCommentForm" onSubmit={handleUpdatePost}>
-        <div className="form-field">
-          <input
-            type="text"
-            name="name"
-            placeholder="Post title"
-            className="NewCommentForm__input"
-            value={postTitle}
-            onChange={handleTitleInput}
-            required
-          />
-        </div>
+      <div className="UpdatePostForm__form-wrapper">
+        <form className="UpdatePostForm__form" onSubmit={handleUpdatePost}>
+          <div className="form-field">
+            <input
+              type="text"
+              name="name"
+              placeholder="Post title"
+              className="UpdatePostForm__input"
+              value={postTitle}
+              onChange={handleTitleInput}
+              required
+            />
+          </div>
 
-        <div className="form-field">
-          <textarea
-            name="body"
-            placeholder="Post text"
-            className="NewCommentForm__input"
-            value={postBody}
-            onChange={handleBodyInput}
-            required
-          />
-        </div>
+          <div className="form-field">
+            <textarea
+              name="body"
+              placeholder="Post text"
+              className="UpdatePostForm__input"
+              value={postBody}
+              onChange={handleBodyInput}
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="NewCommentForm__submit-button button"
-        >
-          Update post
-        </button>
-      </form>
-    </>
+          <button
+            type="submit"
+            className="UpdatePostForm__submit-button"
+          >
+            Update post
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };

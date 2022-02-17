@@ -12,13 +12,14 @@ import './PostsList.scss';
 export const PostsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
   const {
     selectedPostId,
     posts,
   } = useSelector((state: PostsState) => state.postsListSlice);
 
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -48,12 +49,16 @@ export const PostsList = () => {
     }
 
     setLoading(false);
+
+    dispatch(setSelectedPostId(0));
   };
 
   const handleUpdatePost = async (event: React.MouseEvent<HTMLButtonElement>) => {
     const id: string = event.currentTarget.name;
 
     navigate('/update-post-form', { state: id });
+
+    dispatch(setSelectedPostId(0));
   };
 
   const getVisiblePosts = () => {
@@ -79,10 +84,7 @@ export const PostsList = () => {
 
               <button
                 type="button"
-                className={classNames(
-                  'PostsList__button',
-                  'button',
-                )}
+                className="PostsList__button"
                 name={String(post.id)}
                 onClick={handleUpdatePost}
               >
@@ -91,10 +93,7 @@ export const PostsList = () => {
 
               <button
                 type="button"
-                className={classNames(
-                  'PostsList__button',
-                  'button',
-                )}
+                className="PostsList__button"
                 name={String(post.id)}
                 onClick={handleDeletePost}
               >

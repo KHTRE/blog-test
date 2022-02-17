@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
-
-import './NewPostForm.scss';
 import { addNewPost } from '../../api/posts';
+import './NewPostForm.scss';
 
 export const NewPostForm: React.FC = () => {
   const [error, setError] = useState('');
-  const navigate = useNavigate();
   const [postBody, setPostBody] = useState<string>('');
   const [postTitle, setPostTitle] = useState<string>('');
+
+  const navigate = useNavigate();
 
   const handleTitleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPostTitle(event.target.value);
@@ -29,13 +29,13 @@ export const NewPostForm: React.FC = () => {
 
     setPostBody('');
     setPostTitle('');
-    if (error !== '') {
+    if (error === '') {
       navigate('/');
     }
   };
 
   return (
-    <>
+    <div className="NewPostForm">
       <NavLink
         to="/"
         className={({
@@ -46,38 +46,39 @@ export const NewPostForm: React.FC = () => {
       </NavLink>
 
       <div className="error">{error}</div>
+      <div className="NewPostForm__form-wrapper">
+        <form className="NewPostForm__form" onSubmit={handleAddPost}>
+          <div className="form-field">
+            <input
+              type="text"
+              name="name"
+              placeholder="Post title"
+              className="NewPostForm__input"
+              value={postTitle}
+              onChange={handleTitleInput}
+              required
+            />
+          </div>
 
-      <form className="NewCommentForm" onSubmit={handleAddPost}>
-        <div className="form-field">
-          <input
-            type="text"
-            name="name"
-            placeholder="Post title"
-            className="NewCommentForm__input"
-            value={postTitle}
-            onChange={handleTitleInput}
-            required
-          />
-        </div>
+          <div className="form-field">
+            <textarea
+              name="body"
+              placeholder="Post text"
+              className="NewPostForm__input"
+              value={postBody}
+              onChange={handleBodyInput}
+              required
+            />
+          </div>
 
-        <div className="form-field">
-          <textarea
-            name="body"
-            placeholder="Post text"
-            className="NewCommentForm__input"
-            value={postBody}
-            onChange={handleBodyInput}
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="NewCommentForm__submit-button button"
-        >
-          Add new post
-        </button>
-      </form>
-    </>
+          <button
+            type="submit"
+            className="NewPostForm__submit-button"
+          >
+            Add new post
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
